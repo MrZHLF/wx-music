@@ -23,11 +23,12 @@ Component({
     onSelect(event){
       // 选中状态
       let musicid = event.currentTarget.dataset.musicid
+      let index = event.currentTarget.dataset.index
       this.setData({
         playingId: musicid
       })
       wx.navigateTo({
-        url: `/pages/player/player?musicid=${musicid}`,
+        url: `/pages/player/player?musicId=${musicid}&index=${index}`,
       })
     }
   }
