@@ -11,7 +11,7 @@ Component({
    * 组件的属性列表
    */
   properties: {
-
+    isSame:Boolean //从父组件接受过来传递判断是否当前播放是歌曲
   },
 
   /**
@@ -27,6 +27,10 @@ Component({
   },
   lifetimes:{
     ready(){
+      if (this.properties.isSame && this.data.showTime.totalTime == '00:00') {
+        // 判断isSame是否位true和时间是否位当前设置的时间，重新调用更新时间的方法
+        this._setTime()
+      }
       this._getMovableDis()
       this._bindBGMEvent()
     }
@@ -40,6 +44,7 @@ Component({
       if(event.detail.source=='touch') {
         this.data.progress=event.detail.x / (movableAreaWidth-movableViewWidth) * 100
         this.data.movableDis =event.detail.x
+        isMoving=true
       }
     },
     onTouchEnd(){
@@ -51,13 +56,14 @@ Component({
         ['showTime.currentTime']: currentTimeFmt.min + ':' + currentTimeFmt.sec
       })
       backgroundAudioManager.seek(duration*this.data.progress / 100)
+      isMoving=false
     },
     _getMovableDis(){
+      //获取宽度
       const query = this.createSelectorQuery()
       query.select('.movable-area').boundingClientRect()
       query.select('.movable-view').boundingClientRect()
       query.exec((rect) =>{
-        console.log(rect)
         movableAreaWidth = rect[0].width
         movableViewWidth=rect[1].width
       })
@@ -66,22 +72,21 @@ Component({
       
       backgroundAudioManager.onPlay(()=>{
         // 播放
-        console.log('onPlay')
+        isMoving=false
+        this.triggerEvent('musicPlay') //播放
       })
       backgroundAudioManager.onStop(() => {
         // 停止
-        console.log('onStop')
       })
       backgroundAudioManager.onPause(() => {
         // 暂停
-        console.log('onPause')
+        this.triggerEvent('musicPause') //播放
       })
       backgroundAudioManager.onWaiting(() => {
         // 音频加载
-        console.log('onWaiting')
       })
       backgroundAudioManager.onCanplay(() => {
-        console.log(backgroundAudioManager.duration,'onCanplay')
+        // 监听背景音频进入可播放状态事件。 但不保证后面可以流畅播放
         if (typeof backgroundAudioManager.duration != 'undefined') {
           //获取音频总时间
           this._setTime()
@@ -92,30 +97,32 @@ Component({
         }
       })
       backgroundAudioManager.onTimeUpdate(() => {
-        
-        const currentTime = backgroundAudioManager.currentTime //当前播放进度时间
-        const duration = backgroundAudioManager.duration //总时长
-      
-        const sec = currentTime.toString().split('.')[0]
-        if (sec != currentSec) {
-          // 判断时间是否有想等的 
-          const currentFmt = this._dateFormat(currentTime)
-          console.log('onTimeUpdate', currentTime)
-          this.setData({
-            movableDis: (movableAreaWidth - movableViewWidth) * currentTime / duration,
-            progress: currentTime / duration * 100,
-            ['showTime.currentTime']: `${currentFmt.min}:${currentFmt.sec}`
-          })
-          currentSec=sec
+        if (!isMoving){
+          const currentTime = backgroundAudioManager.currentTime //当前播放进度时间
+          const duration = backgroundAudioManager.duration //总时长
+
+          const sec = currentTime.toString().split('.')[0]
+          if (sec != currentSec) {
+            // 判断时间是否有想等的 
+            const currentFmt = this._dateFormat(currentTime)
+            this.setData({
+              movableDis: (movableAreaWidth - movableViewWidth) * currentTime / duration,
+              progress: currentTime / duration * 100,
+              ['showTime.currentTime']: `${currentFmt.min}:${currentFmt.sec}`
+            })
+            currentSec = sec
+            // 联动歌词
+            this.triggerEvent('timeUpdate',{
+              currentTime
+            })
+          }
         }
-        
       })
       backgroundAudioManager.onEnded(() => {
         // 监听播放完
-        console.log('onEnded')
+        this.triggerEvent('musicEnd')
       })
       backgroundAudioManager.onError((res) => {
-        console.log(res.errMsg)
         wx.showToast({
           title: '错误'+res.errMsg,
         })

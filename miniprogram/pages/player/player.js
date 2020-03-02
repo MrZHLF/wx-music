@@ -4,6 +4,7 @@ let musiclist = []
 let nowPlayingIndex = 0
 //获取全局位移背景音乐播放器
 const backgroundAudioManager = wx.getBackgroundAudioManager()
+const app=getApp()
 Page({
 
   /**
@@ -12,6 +13,9 @@ Page({
   data: {
     picUrl:"",
     isPlaying:false, //false不播放，true播放
+    isLyricShow:false ,//当前歌词是否显示
+    lyric:"",
+    isSame:false , //是否位同一首歌曲
   },
 
   /**
@@ -24,8 +28,22 @@ Page({
     this._loadMusicDetail(options.musicId)
   },
   _loadMusicDetail(musicId) {
+    if (musicId == app.getPlayMusicId()){
+      // 如果播放的是当前的歌曲 需要把isSame设置位true
+      this.setData({
+        isSame:true
+      })
+    } else {
+      this.setData({
+        isSame: false
+      })
+    }
     // 每次切换的时候先暂停
-    backgroundAudioManager.stop()
+    if(!this.data.isSame) {
+      // 不是瞳一首歌曲，暂停
+      backgroundAudioManager.stop()
+    }
+    
     let music = musiclist[nowPlayingIndex]
     console.log(music)
     wx.setNavigationBarTitle({
@@ -35,6 +53,9 @@ Page({
       picUrl: music.al.picUrl,
       isPlaying:false
     })
+
+    app.setPlayMusicId(musicId) //设置全局播放ID
+
     wx.showLoading({
       title: '歌曲加载中...',
     })
@@ -46,18 +67,46 @@ Page({
         
       }
     }).then((res)=>{
-      console.log(res,'res')
       let result = JSON.parse(res.result)
       //设置全局背景音乐播放器
-      backgroundAudioManager.src = result.data[0].url
-      backgroundAudioManager.title = music.name
-      backgroundAudioManager.coverImgUrl=music.al.picUrl
-      backgroundAudioManager.singer=music.ar[0].name 
-      backgroundAudioManager.epname=music.al.name
+      if(result.data[0].url == null) {
+        wx.showToast({
+          title: '无权限播放',
+        })
+        return
+      }
+      if(!this.data.isSame) {
+        // 如果不是同一首歌曲的话，设置播放属性，
+        backgroundAudioManager.src = result.data[0].url
+        backgroundAudioManager.title = music.name
+        backgroundAudioManager.coverImgUrl = music.al.picUrl
+        backgroundAudioManager.singer = music.ar[0].name
+        backgroundAudioManager.epname = music.al.name
+      }
+      
       this.setData({
         isPlaying: true
       })
       wx.hideLoading()
+      // 加载歌词
+      wx.cloud.callFunction({
+        name: 'music',
+        data: {
+          musicId,
+          $url: 'lyric'
+        }
+      }).then((res) =>{
+        
+        let lyric='暂无歌词'
+        const lrc = JSON.parse(res.result).lrc
+        if(lrc) {
+          lyric = lrc.lyric
+          console.log(lrc)
+        }
+        this.setData({
+          lyric
+        })
+      })
     })
   },
   togglePlaying(){
@@ -91,52 +140,25 @@ Page({
     }
     this._loadMusicDetail(musiclist[nowPlayingIndex].id)
   },
-  /**
-   * 生命周期函数--监听页面初次渲染完成
-   */
-  onReady: function () {
-
+  onChangeLyriShow(){
+    this.setData({
+      isLyricShow: !this.data.isLyricShow
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面显示
-   */
-  onShow: function () {
-
+  timeUpdate(event){
+    // 传给歌词组件
+    this.selectComponent('.lyric').update(event.detail.currentTime)
   },
-
-  /**
-   * 生命周期函数--监听页面隐藏
-   */
-  onHide: function () {
-
+  onPlay(){
+    // 播放  监听进度条传过来的方法 控制面板联动
+    this.setData({
+      isPlaying:true
+    })
   },
-
-  /**
-   * 生命周期函数--监听页面卸载
-   */
-  onUnload: function () {
-
-  },
-
-  /**
-   * 页面相关事件处理函数--监听用户下拉动作
-   */
-  onPullDownRefresh: function () {
-
-  },
-
-  /**
-   * 页面上拉触底事件的处理函数
-   */
-  onReachBottom: function () {
-
-  },
-
-  /**
-   * 用户点击右上角分享
-   */
-  onShareAppMessage: function () {
-
+  onPause(){
+    // 暂停 监听进度条传过来的方法 控制面板联动
+    this.setData({
+      isPlaying: false
+    })
   }
 })
