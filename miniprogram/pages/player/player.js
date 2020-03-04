@@ -45,7 +45,6 @@ Page({
     }
     
     let music = musiclist[nowPlayingIndex]
-    console.log(music)
     wx.setNavigationBarTitle({
       title:music.name,
     })

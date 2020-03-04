@@ -80,6 +80,7 @@ Component({
     },
     // 解析歌词
     _parseLyric(sLyric) {
+      console.log(sLyric)
       let line = sLyric.split('\n')
       let _lrcList=[]
       line.forEach((elem) =>{
@@ -98,6 +99,8 @@ Component({
       this.setData({
         lrcList: _lrcList
       })
+        lrcList: _lrcList
+      console.log(_lrcList)
     }
   }
 })
