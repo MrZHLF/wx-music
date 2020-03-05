@@ -5,9 +5,14 @@
     bindfocus="onFocus" bindblur="onBlur"></textarea>
   <view class="image-list">
     <!-- 显示图片 -->
-
+    <block wx:for="{{images}}" wx:key="*key">
+      <view class="image-wrap">
+        <image class="image" mode="aspectFill" src="{{item}}" bind:tap="onPreviewImage" data-imgsrc="{{item}}"></image>
+        <i class="iconfont icon-shanchu" bind:tap="onDelImage" data-index="{{index}}"></i>
+      </view>    
+    </block>
     <!-- 选择上传图片 -->
-    <view class="image-wrap selectphoto">
+    <view class="image-wrap selectphoto" hidden="{{!selectPhoto}}" bindtap="onChooseImage">
       <i class="iconfont icon-jiahao"></i> 
     </view>
 
@@ -16,5 +21,5 @@
 
 <view class="footer" style="bottom:{{footerBottom}}px">
   <text class="words-num">{{wordsNum}}</text>
-  <button class="send-btn">发布</button>
+  <button class="send-btn" bindtap="send">发布</button>
 </view>

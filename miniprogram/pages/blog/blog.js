@@ -5,14 +5,34 @@ Page({
    * 页面的初始数据
    */
   data: {
-    modalShow:false
+    modalShow:false,
+    blogList:[]
   },
 
   /**
    * 生命周期函数--监听页面加载
    */
   onLoad: function (options) {
-   
+    this._getBlogList()
+  },
+  _getBlogList(){
+    wx.showLoading({
+      title: '数据加载中...',
+    })
+    wx.cloud.callFunction({
+      name:"blog",
+      data:{
+        $url:'list',
+        start:0,
+        count:10
+      }
+    }).then((res) =>{
+      console.log(res)
+      this.setData({
+        blogList:this.data.blogList.concat(res.result)
+      })
+      wx.hideLoading()
+    })
   },
   onPublish(){
     // 判断用户是否授权
