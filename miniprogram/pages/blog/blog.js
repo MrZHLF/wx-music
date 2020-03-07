@@ -15,16 +15,16 @@ Page({
   onLoad: function (options) {
     this._getBlogList()
   },
-  _getBlogList(){
+  _getBlogList(start=0){
     wx.showLoading({
       title: '数据加载中...',
     })
     wx.cloud.callFunction({
       name:"blog",
       data:{
-        $url:'list',
-        start:0,
-        count:10
+        start,
+        count: 10,
+        $url:'list'
       }
     }).then((res) =>{
       console.log(res)
@@ -32,6 +32,7 @@ Page({
         blogList:this.data.blogList.concat(res.result)
       })
       wx.hideLoading()
+      wx.stopPullDownRefresh()
     })
   },
   onPublish(){
@@ -70,6 +71,11 @@ Page({
       title: '授权用户才能发布',
     })
   },
+  goComment(event){
+    wx.navigateTo({
+      url: '../../pages/blog-comment/blog-comment?blogId=' + event.target.dataset.blogid,
+    })
+  },
   /**
    * 生命周期函数--监听页面初次渲染完成
    */
@@ -102,14 +108,17 @@ Page({
    * 页面相关事件处理函数--监听用户下拉动作
    */
   onPullDownRefresh: function () {
-
+    this.setData({
+      blogList:[]
+    })
+    this._getBlogList(0)
   },
 
   /**
    * 页面上拉触底事件的处理函数
    */
   onReachBottom: function () {
-
+    this._getBlogList(this.data.blogList.length)
   },
 
   /**

@@ -98,6 +98,7 @@ Page({
     // 图片上传云存储
     wx.showLoading({
       title: '发布中',
+      mask:true
     })
     for(let i=0,len=this.data.images.length;i<len;i++) {
       let p = new Promise((resolve,rejrct) =>{
@@ -135,6 +136,10 @@ Page({
         })
         // 返回blog页面
         wx.navigateBack()
+        const pages = getCurrentPages()
+        // 取到上一个页面
+        const prevPage = pages[pages.length-2]
+        prevPage.onPullDownRefresh() //调用山父组件刷新功能
       }).catch(err=>{
         // 上传失败
         wx.showToast({
