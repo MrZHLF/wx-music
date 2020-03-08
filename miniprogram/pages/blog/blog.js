@@ -1,4 +1,5 @@
 // pages/blog/blog.js
+let keyword=''
 Page({
 
   /**
@@ -22,6 +23,7 @@ Page({
     wx.cloud.callFunction({
       name:"blog",
       data:{
+        keyword,
         start,
         count: 10,
         $url:'list'
@@ -75,6 +77,15 @@ Page({
     wx.navigateTo({
       url: '../../pages/blog-comment/blog-comment?blogId=' + event.target.dataset.blogid,
     })
+  },
+  onSearch(event){
+    // 搜索
+    // console.log(event.detail.keyword)
+    this.setData({
+      blogList:[]
+    })
+    keyword = event.detail.keyword
+    this._getBlogList(0)
   },
   /**
    * 生命周期函数--监听页面初次渲染完成
