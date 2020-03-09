@@ -4,8 +4,10 @@
     <text>评论</text>
   </view>
   <view class="ctrl-item share">
-    <i class="iconfont icon-fenxiang icon"></i>
-    <text>分享</text>
+    <button open-type="share" data-blogid="{{blogId}}" data-blog="{{blog}}" class="share-btn" hover-class="share-hover">
+      <i class="iconfont icon-fenxiang icon"></i>
+      <text>分享</text>
+    </button>
   </view>
 </view>
 <x-login modalShow="{{loginShow}}" bind:loginsuccess="onLoginsuccess" bind:loginfail="onLoginfail"></x-login>

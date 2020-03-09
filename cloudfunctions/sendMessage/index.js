@@ -20,7 +20,7 @@ exports.main = async (event, context) => {
         value: event.nickName
       }
     },
-    templateId: '', //订阅消息模板ID
+    templateId: 'cq8n3i9UnjHj8HR50lJKBWUMHEDxa5F8Xxbc_7fypNM', //订阅消息模板ID
     formId: event.formId
   })
   console.log(result)
