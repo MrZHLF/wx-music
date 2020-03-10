@@ -67,6 +67,7 @@
 					"id": -1,
 					"name": "pages/blog/blog",
 					"pathName": "pages/blog/blog",
+					"query": "",
 					"scene": null
 				},
 				{
@@ -74,6 +75,12 @@
 					"name": "pages/blog-edit/blog-edit",
 					"pathName": "pages/blog-edit/blog-edit",
 					"query": "avatarUrl=\"https://wx.qlogo.cn/mmopen/vi_32/Q0j4TwGTfTK6xwUp8JiaFNN2JIc1BfaCRq2wJ0admjWHWvZ35CKNWTiabWyiau0W4vglbPnzKNTRbxuLTsWTnJEQQ/132\"&nickName= \"  \"",
+					"scene": null
+				},
+				{
+					"id": -1,
+					"name": "pages/profile/profile",
+					"pathName": "pages/profile/profile",
 					"scene": null
 				}
 			]
