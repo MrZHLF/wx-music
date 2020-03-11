@@ -7,9 +7,7 @@ cloud.init()
 const BASE_URL = 'http://musicapi.xiecheng.live'
 // 云函数入口函数
 exports.main = async (event, context) => {
-
   const app = new TcbRouter({event})
-
   app.router('playlist',async(ctx,next) =>{
     ctx.body = await cloud.database().collection('playlist')
       .skip(event.start)
