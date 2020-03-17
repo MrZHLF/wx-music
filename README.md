@@ -14,3 +14,7 @@
   - [X] 评论，分享，用户授权
   - [X] 播放历史记录
   - [X] tcb-router 于 koa 风格的小程序·云开发云函数轻量级类路由库
+
+- 需要在app.js文件中填写env云环境名称
+- 需要在blog和music,getPlaylist填写自己创建的数据库名称
+- music,getPlaylist数据库名称一样

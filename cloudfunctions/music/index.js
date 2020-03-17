@@ -9,7 +9,7 @@ const BASE_URL = 'http://musicapi.xiecheng.live'
 exports.main = async (event, context) => {
   const app = new TcbRouter({event})
   app.router('playlist',async(ctx,next) =>{
-    ctx.body = await cloud.database().collection('playlist')
+    ctx.body = await cloud.database().collection('')
       .skip(event.start)
       .limit(event.count)
       .orderBy('createTime', 'desc')

@@ -4,7 +4,7 @@ const TcbRouter = require('tcb-router')
 cloud.init()
 const MAX_LIMIT=100
 const db= cloud.database()
-const blogCollection = db.collection('blog')
+const blogCollection = db.collection('') //创建自己数据库名成
 // 云函数入口函数
 exports.main = async (event, context) => {
   const app = new TcbRouter({

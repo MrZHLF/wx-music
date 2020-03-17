@@ -11,7 +11,7 @@ const URL= 'http://musicapi.xiecheng.live/personalized'
 const MAX_LIMIT=100
 
 // 云函数入口函数
-const playlistCollection = db.collection('playlist') //数据集合
+const playlistCollection = db.collection('') //数据集合
 
 exports.main = async (event, context) => {
   //const list = await playlistCollection.get() //或者集合里面所有数据
